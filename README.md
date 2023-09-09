@@ -1,51 +1,20 @@
-# Flight Management System
+# Deals and Coupon Management Application
 
-This Flight Management System is a web application built using React for the frontend and Spring Boot for the backend. It utilizes MongoDB for data storage and follows RESTful API principles for communication between the client and server.
-
-## Technologies Used
-
-- **React**: The frontend is developed using React, a JavaScript library for building user interfaces.
-
-- **Spring Boot**: The backend is built on Spring Boot, a Java-based framework for developing web applications.
-
-- **MongoDB**: MongoDB is used as the database to store flight information.
-
-- **Axios**: Axios is used for making HTTP requests between the frontend and backend.
+This is a simple web application for managing deals and coupons. It allows you to perform CRUD (Create, Read, Update, Delete) operations on coupons. The application is built using React for the frontend and Spring Boot for the backend.
 
 ## Features
 
-- **Flight Registration**: Users can register new flights by providing flight name, destination, and price.
+- Register new coupons with details like merchant name, coupon code, expiry date, title, and description.
+- Edit existing coupons.
+- Delete coupons.
+- Search for coupons by merchant name.
+- View coupons in a paginated list.
 
-- **Flight Editing**: Existing flights can be edited with updated details.
+## Prerequisites
 
-- **Flight Deletion**: Flights can be deleted from the system.
+Before you begin, ensure you have met the following requirements:
 
-- **Listing Flights**: The system lists all flights stored in the MongoDB database.
+- Node.js and npm (Node Package Manager) installed on your machine.
+- Java and Spring Boot set up for the backend.
+- MongoDB set up and running. Make sure to configure the database connection in the backend.
 
-## Usage
-
-1. Clone the repository.
-
-2. Navigate to the `flight-management-system` directory.
-
-3. Run the Spring Boot backend:
-   ```bash
-   cd backend
-   ./mvnw spring-boot:run
-  Copy code
-  cd frontend
-  npm install
-  npm start
-  Access the application in your web browser at http://localhost:3000.
-  
-  ## API Endpoints
-
-  
- - GET /api/v1/flight/getall: Get all flights.
- - POST /api/v1/flight/save: Register a new flight.
- - PUT /api/v1/flight/edit/{id}: Update an existing flight.
- - DELETE /api/v1/flight/delete/{id}: Delete a flight.
-  
-  Feel free to contribute to this project and improve the Flight Management System.
-  
-  Enjoy managing your flights!         
