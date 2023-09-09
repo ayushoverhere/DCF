@@ -6,7 +6,6 @@ function CouponManagement() {
   const [couponCode, setCouponCode] = useState('');
   const [expiryDate, setExpiryDate] = useState('');
   const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
   const [coupons, setCoupons] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const [filteredCoupons, setFilteredCoupons] = useState([]);
@@ -31,13 +30,16 @@ function CouponManagement() {
 
   const registerCoupon = async (event) => {
     event.preventDefault();
+    if (!merchantName || !couponCode || !expiryDate || !title) {
+      alert('Please fill in all fields.');
+      return;
+    }
     try {
       await axios.post('http://localhost:8081/api/v1/admin/coupon/submit', {
         merchantName,
         couponCode,
         expiryDate,
         title,
-        description,
       });
       clearForm();
       loadCoupons();
@@ -51,22 +53,29 @@ function CouponManagement() {
   const editCoupon = (coupon) => {
     setMerchantName(coupon.merchantName);
     setCouponCode(coupon.couponCode);
-    setExpiryDate(coupon.expiryDate);
+    setExpiryDate(new Date(coupon.expiryDate).toISOString().split('T')[0]);
     setTitle(coupon.title);
-    setDescription(coupon.description);
-    setSelectedCouponId(coupon._id);
+    setSelectedCouponId(coupon.couponCode); // Using coupon code as the ID
+  };
+
+  const cancelEdit = () => {
+    setSelectedCouponId('');
+    clearForm();
   };
 
   const updateCoupon = async () => {
+    if (!merchantName || !couponCode || !expiryDate || !title) {
+      alert('Please fill in all fields.');
+      return;
+    }
     try {
       await axios.put(`http://localhost:8081/api/v1/admin/coupon/update/${selectedCouponId}`, {
         merchantName,
         couponCode,
         expiryDate,
         title,
-        description,
       });
-      clearForm();
+      cancelEdit();
       loadCoupons();
       alert('Coupon Update Successful');
     } catch (error) {
@@ -75,9 +84,9 @@ function CouponManagement() {
     }
   };
 
-  const deleteCoupon = async (couponId) => {
+  const deleteCoupon = async (couponCode) => {
     try {
-      await axios.delete(`http://localhost:8081/api/v1/admin/coupon/delete/${couponId}`);
+      await axios.delete(`http://localhost:8081/api/v1/admin/coupon/delete/${couponCode}`);
       loadCoupons();
       alert('Coupon Deletion Successful');
     } catch (error) {
@@ -91,14 +100,14 @@ function CouponManagement() {
     setCouponCode('');
     setExpiryDate('');
     setTitle('');
-    setDescription('');
-    setSelectedCouponId('');
   };
 
   const handleSearch = () => {
-    const filtered = coupons.filter((coupon) =>
-      coupon.merchantName.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    const filtered = coupons.filter((coupon) => {
+      const merchantMatch = coupon.merchantName.toLowerCase().includes(searchQuery.toLowerCase());
+      const couponCodeMatch = coupon.couponCode.toLowerCase().includes(searchQuery.toLowerCase());
+      return merchantMatch || couponCodeMatch;
+    });
     setFilteredCoupons(filtered.slice(0, 5)); // Show the first 5 filtered coupons
     setTotalCoupons(filtered.length);
     setShowAllCoupons(false);
@@ -119,7 +128,7 @@ function CouponManagement() {
       <h1 className="mb-3">Deals and Coupon Management</h1>
       <div className="row">
         <div className="col-md-6">
-          <form onSubmit={registerCoupon}>
+          <form onSubmit={selectedCouponId ? updateCoupon : registerCoupon}>
             <div className="form-group">
               <label>Merchant Name</label>
               <input
@@ -163,21 +172,16 @@ function CouponManagement() {
                 required
               />
             </div>
-            <div className="form-group">
-              <label>Description</label>
-              <textarea
-                className="form-control"
-                value={description}
-                onChange={(e) => setDescription(e.target.value)}
-                placeholder="Enter coupon description"
-                required
-              ></textarea>
-            </div>
             <div className="d-flex justify-content-between align-items-center">
               {selectedCouponId ? (
-                <button className="btn btn-warning" type="button" onClick={updateCoupon}>
-                  Update Coupon
-                </button>
+                <>
+                  <button className="btn btn-success" type="submit">
+                    Update Coupon
+                  </button>
+                  <button className="btn btn-danger" type="button" onClick={cancelEdit}>
+                    Cancel Edit
+                  </button>
+                </>
               ) : (
                 <button className="btn btn-primary" type="submit">
                   Register Coupon
@@ -195,7 +199,7 @@ function CouponManagement() {
               <input
                 type="text"
                 className="form-control"
-                placeholder="Search by Merchant Name"
+                placeholder="Search Merchants or Coupon Code"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -223,18 +227,16 @@ function CouponManagement() {
                 <th scope="col">Coupon Code</th>
                 <th scope="col">Expiry Date</th>
                 <th scope="col">Title</th>
-                <th scope="col">Description</th>
                 <th scope="col">Options</th>
               </tr>
             </thead>
             <tbody>
               {filteredCoupons.map((coupon) => (
-                <tr key={coupon._id}>
+                <tr key={coupon.couponCode}>
                   <td>{coupon.merchantName}</td>
                   <td>{coupon.couponCode}</td>
                   <td>{new Date(coupon.expiryDate).toLocaleDateString()}</td>
                   <td>{coupon.title}</td>
-                  <td>{coupon.description}</td>
                   <td>
                     <button
                       className="btn btn-warning btn-sm"
@@ -244,7 +246,7 @@ function CouponManagement() {
                     </button>
                     <button
                       className="btn btn-danger btn-sm"
-                      onClick={() => deleteCoupon(coupon._id)}
+                      onClick={() => deleteCoupon(coupon.couponCode)}
                     >
                       Delete
                     </button>

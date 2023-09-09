@@ -16,5 +16,8 @@ public interface CouponService {
 
     long getTotalSubmissions();
 
-    Coupon getCouponByCode(String couponCode); // New method for searching by coupon code
+    Coupon getCouponByCode(String couponCode);
+
+	List<Coupon> getCouponsByMerchant(String merchantName);
+
 }

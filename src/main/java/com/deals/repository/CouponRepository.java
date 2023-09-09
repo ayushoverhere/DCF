@@ -1,9 +1,13 @@
 package com.deals.repository;
 
-import com.deals.model.Coupon;
+import java.util.List;
+
 import org.springframework.data.mongodb.repository.MongoRepository;
+import org.springframework.stereotype.Repository;
 
+import com.deals.model.Coupon;
+
+@Repository
 public interface CouponRepository extends MongoRepository<Coupon, String> {
-
-    // Add custom query methods here if needed
+    List<Coupon> findByMerchantNameIgnoreCase(String merchantName);
 }

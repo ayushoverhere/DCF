@@ -1,23 +1,28 @@
 package com.deals.model;
 
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.mapping.Document;
+
 import java.util.Date;
 
+@Document
 public class Coupon {
-
-    public String getMerchantName() {
-		return merchantName;
-	}
-
-	public void setMerchantName(String merchantName) {
-		this.merchantName = merchantName;
-	}
-
-	public String getCouponCode() {
+    @Id
+    private String couponCode;
+    public String getCouponCode() {
 		return couponCode;
 	}
 
 	public void setCouponCode(String couponCode) {
 		this.couponCode = couponCode;
+	}
+
+	public String getMerchantName() {
+		return merchantName;
+	}
+
+	public void setMerchantName(String merchantName) {
+		this.merchantName = merchantName;
 	}
 
 	public Date getExpiryDate() {
@@ -36,28 +41,21 @@ public class Coupon {
 		this.title = title;
 	}
 
-	public String getDescription() {
-		return description;
-	}
-
-	public void setDescription(String description) {
-		this.description = description;
-	}
-
 	private String merchantName;
-    private String couponCode;
     private Date expiryDate;
     private String title;
-    private String description;
 
-    // Constructors, getters, and setters for all fields
+    // Getters and setters for all fields
 
-    // Additional constructor
-    public Coupon(String merchantName, String couponCode, Date expiryDate, String title, String description) {
-        this.merchantName = merchantName;
+    // Constructors
+
+    public Coupon() {
+    }
+
+    public Coupon(String couponCode, String merchantName, Date expiryDate, String title) {
         this.couponCode = couponCode;
+        this.merchantName = merchantName;
         this.expiryDate = expiryDate;
         this.title = title;
-        this.description = description;
     }
 }

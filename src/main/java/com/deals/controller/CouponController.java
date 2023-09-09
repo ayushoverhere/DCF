@@ -1,14 +1,22 @@
 package com.deals.controller;
 
-import com.deals.model.Coupon;
-import com.deals.service.CouponService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.deals.model.Coupon;
+import com.deals.service.CouponService;
+
 @RestController
-@RequestMapping("/api/v1/admin/coupon") // Updated endpoint path
+@RequestMapping("/api/v1/admin/coupon")
 public class CouponController {
 
     @Autowired
@@ -29,14 +37,27 @@ public class CouponController {
     public String updateCoupon(
             @PathVariable(name = "couponCode") String couponCode,
             @RequestBody Coupon updatedCoupon) {
-        couponService.updateCoupon(couponCode, updatedCoupon);
-        return "Coupon updated successfully!";
+        Coupon existingCoupon = couponService.getCouponByCode(couponCode);
+        if (existingCoupon != null) {
+            existingCoupon.setMerchantName(updatedCoupon.getMerchantName());
+            existingCoupon.setExpiryDate(updatedCoupon.getExpiryDate());
+            existingCoupon.setTitle(updatedCoupon.getTitle());
+            couponService.updateCoupon(couponCode, existingCoupon);
+            return "Coupon updated successfully!";
+        } else {
+            return "Coupon not found.";
+        }
     }
 
     @DeleteMapping("/delete/{couponCode}")
     public String deleteCoupon(@PathVariable(name = "couponCode") String couponCode) {
-        couponService.deleteCoupon(couponCode);
-        return "Coupon deleted successfully!";
+        Coupon existingCoupon = couponService.getCouponByCode(couponCode);
+        if (existingCoupon != null) {
+            couponService.deleteCoupon(couponCode);
+            return "Coupon deleted successfully!";
+        } else {
+            return "Coupon not found.";
+        }
     }
 
     @GetMapping("/total-submissions")
@@ -44,8 +65,13 @@ public class CouponController {
         return couponService.getTotalSubmissions();
     }
 
-    @GetMapping("/search/{couponCode}") // New endpoint for searching by coupon code
+    @GetMapping("/search/{couponCode}")
     public Coupon searchCoupon(@PathVariable(name = "couponCode") String couponCode) {
         return couponService.getCouponByCode(couponCode);
+    }
+
+    @GetMapping("/search/merchant/{merchantName}")
+    public List<Coupon> searchCouponsByMerchantName(@PathVariable(name = "merchantName") String merchantName) {
+        return couponService.getCouponsByMerchant(merchantName);
     }
 }

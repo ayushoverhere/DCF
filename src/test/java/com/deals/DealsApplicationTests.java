@@ -1,4 +1,4 @@
-package com.example.SpringMongoProject;
+package com.deals;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

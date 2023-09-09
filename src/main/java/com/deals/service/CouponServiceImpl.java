@@ -1,54 +1,51 @@
 package com.deals.service;
 
-import com.deals.model.Coupon;
+import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.deals.model.Coupon;
+import com.deals.repository.CouponRepository;
 
 @Service
 public class CouponServiceImpl implements CouponService {
 
-    private List<Coupon> couponList = new ArrayList<>();
+    @Autowired
+    private CouponRepository couponRepository;
 
     @Override
     public void submitCoupon(Coupon coupon) {
-        couponList.add(coupon);
+        couponRepository.save(coupon);
     }
 
     @Override
     public List<Coupon> getAllCoupons() {
-        return couponList;
+        return couponRepository.findAll();
     }
 
     @Override
     public void updateCoupon(String couponCode, Coupon updatedCoupon) {
-        for (int i = 0; i < couponList.size(); i++) {
-            if (couponList.get(i).getCouponCode().equals(couponCode)) {
-                couponList.set(i, updatedCoupon);
-                return;
-            }
-        }
+        couponRepository.save(updatedCoupon);
     }
 
     @Override
     public void deleteCoupon(String couponCode) {
-        couponList.removeIf(coupon -> coupon.getCouponCode().equals(couponCode));
+        couponRepository.deleteById(couponCode);
     }
 
     @Override
     public long getTotalSubmissions() {
-        return couponList.size();
+        return couponRepository.count();
     }
 
     @Override
     public Coupon getCouponByCode(String couponCode) {
-        for (Coupon coupon : couponList) {
-            if (coupon.getCouponCode().equals(couponCode)) {
-                return coupon;
-            }
-        }
-        return null;
+        return couponRepository.findById(couponCode).orElse(null);
+    }
+
+    @Override
+    public List<Coupon> getCouponsByMerchant(String merchantName) {
+        return couponRepository.findByMerchantNameIgnoreCase(merchantName);
     }
 }
